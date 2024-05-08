@@ -6,10 +6,11 @@ const sendMail = require('../ultils/sendMail')
 const crypto = require('crypto')
 const validator = require('validator');
 const { parsePhoneNumberFromString } = require('libphonenumber-js');
+
 const register = asyncHandler(async (req, res) => {
-    const { email, password, firstname, lastname, mobile } = req.body;
+    const { email, password, name, mobile } = req.body;
     // Kiểm tra các trường bắt buộc nhập
-    if (!email || !password || !firstname || !lastname || !mobile) {
+    if (!email || !password || !name || !mobile) {
         return res.status(400).json({
             success: false,
             message: 'Vui lòng nhập đầy đủ thông tin'
@@ -124,6 +125,7 @@ const getCurrent = asyncHandler(async (req, res) => {
         res: user ? user : 'Không tìm thấy người dùng'
     })
 })
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
     // Lấy token từ cookies
     const cookie = req.cookies
@@ -153,6 +155,7 @@ const logout = asyncHandler(async (req, res) => {
         message: 'Đăng xuất thành công'
     })
 })
+
 // Client gửi email
 // Server check email có hợp lệ hay không => Gửi mail + kèm theo link (password change token)
 // Client check mail => click link
@@ -180,6 +183,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
         rs
     })
 })
+
 const resetPassword = asyncHandler(async (req, res) => {
     const { password, token } = req.body
     if (!password || !token) throw new Error('Vui lòng nhập đầy đủ thông tin')
@@ -196,6 +200,7 @@ const resetPassword = asyncHandler(async (req, res) => {
         message: user ? 'Đã cập nhật mật khẩu' : 'Đã xảy ra lỗi'
     })
 })
+
 const getUsers = asyncHandler(async (req, res) => {
     const response = await User.find().select('-refreshToken -password -role')
     return res.status(200).json({
@@ -203,6 +208,7 @@ const getUsers = asyncHandler(async (req, res) => {
         users: response
     })
 })
+
 const deleteUser = asyncHandler(async (req, res) => {
     const { _id } = req.query
     if (!_id) throw new Error('Vui lòng nhập đầy đủ thông tin')
@@ -212,6 +218,7 @@ const deleteUser = asyncHandler(async (req, res) => {
         deletedUser: response ? `Người dùng có email ${response.email} đã xóa` : 'Không có người dùng nào xóa'
     })
 })
+
 const updateUser = asyncHandler(async (req, res) => {
     // 
     const { _id } = req.user
@@ -222,6 +229,7 @@ const updateUser = asyncHandler(async (req, res) => {
         updatedUser: response ? response : 'Đã xảy ra lỗi'
     })
 })
+
 const updateUserByAdmin = asyncHandler(async (req, res) => {
     // 
     const { uid } = req.params
@@ -232,6 +240,7 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
         updatedUser: response ? response : 'Đã xảy ra lỗi'
     })
 })
+
 module.exports = {
     register,
     login,

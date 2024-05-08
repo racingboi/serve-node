@@ -3,11 +3,7 @@ const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema({
-    firstname: {
-        type: String,
-        required: true,
-    },
-    lastname: {
+    name: {
         type: String,
         required: true,
     },
@@ -18,8 +14,8 @@ var userSchema = new mongoose.Schema({
     },
     mobile: {
         type: String,
-        required: true,
-        unique: true,
+        // required: true,
+        // unique: true,
     },
     password: {
         type: String,
@@ -29,6 +25,9 @@ var userSchema = new mongoose.Schema({
     role: {
         type: String,
         default: 'user',
+    },
+    img: {
+        type: Array
     },
     cart: {
         type: Array,
