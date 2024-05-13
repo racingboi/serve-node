@@ -4,7 +4,7 @@ import {
   Checkbox, Link, Paper, Box, Grid, Typography, createTheme, ThemeProvider
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useAuth } from '../../../contexts/AuthContext';
+import {useAuth} from '../../../contexts/AuthContext';
 import { auth } from '../../../config/firebase';
 import GoogleIcon from '../../../assets/google.png';
 
@@ -31,6 +31,7 @@ export default function Login() {
       password: data.get('password'),
     });
   };
+  
   const { login } = useAuth();
   const provider = new GoogleAuthProvider();
   const handleSignInWithGoogle = () => {

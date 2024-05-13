@@ -4,7 +4,9 @@ import DrawerAppBar from "../layout/admin/Dashboarh";
 import List from "../pages/admin/products/List";
 import Login from "../pages/auth/login/Login";
 import Register from "../pages/auth/register/Register";
-
+import User from "../pages/admin/user/User";
+import CreateProduct from "../pages/admin/products/add/ProductForm";
+import Category from "../pages/admin/category";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -15,7 +17,10 @@ export default function RootRouter() {
         </DrawerAppBar>, 
       children: [
         { index: true, element: <Home /> },
-        { path: "products", element: <List />},
+        { path: "products", element: <List /> },
+        { path: "products/add", element: <CreateProduct />},
+        { path: "user", element: <User /> },
+        { path: "category", element: <Category /> },
       ],
     }, {
       path: "/login",

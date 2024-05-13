@@ -11,10 +11,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Paper } from '@mui/material';
-import { useAuth } from '../../../contexts/AuthContext';
-import { auth } from '../../../config/firebase';
-import GoogleIcon from '../../../assets/google.png';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -40,21 +36,6 @@ export default function Register() {
       email: data.get('email'),
       password: data.get('password'),
     });
-  };
-
-
-  const { login } = useAuth();
-  const provider = new GoogleAuthProvider();
-  const SignUpUsingGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        login(token);
-      })
-      .catch((error) => {
-        console.log({ error });
-      });
   };
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -89,11 +70,11 @@ export default function Register() {
                     <Grid item xs={12} sm={6}>
                       <TextField
                         autoComplete="given-name"
-                        name="firstName"
+                        name="Name"
                         required
                         fullWidth
-                        id="firstName"
-                        label="First Name"
+                        id="Name"
+                      label="Name"
                         autoFocus
                       />
                     </Grid>
@@ -101,9 +82,9 @@ export default function Register() {
                       <TextField
                         required
                         fullWidth
-                        id="lastName"
-                        label="Last Name"
-                        name="lastName"
+                        id="Phone"
+                        label="Phone"
+                        name="Phone"
                         autoComplete="family-name"
                       />
                     </Grid>
@@ -143,27 +124,6 @@ export default function Register() {
                   >
                     Sign Up
                 </Button>
-                <Button
-                  fullWidth
-                  size="large"
-                  color="inherit"
-                  variant="outlined"
-                  onClick={SignUpUsingGoogle}
-                  startIcon={<img
-                    src={GoogleIcon}
-                    alt="Google Icon"
-                    style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                  />}
-                  sx={{
-                    backgroundColor: '#FFFFFF',
-                    '&:hover': {
-                      backgroundColor: '#357AE8',
-                      color: '#FFFFFF',
-                    },
-                  }}
-                >
-                  Sign In with Google
-                </Button>
                   <Grid container justifyContent="flex-end">
                     <Grid item>
                       <Link href="#" variant="body2">
@@ -174,7 +134,6 @@ export default function Register() {
                 </Box>
               </Box>
               <Copyright sx={{ mt: 5 }} />
-           
           </Box>
         </Grid>
       </Grid>

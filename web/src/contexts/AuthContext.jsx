@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 const AuthContext = createContext();
 
 // Renamed UseAuth to useAuth to follow naming conventions
-export function useAuth() {
+export const useAuth = () => {
   return useContext(AuthContext);
-}
+};
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

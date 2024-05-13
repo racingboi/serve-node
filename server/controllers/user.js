@@ -23,13 +23,6 @@ const register = asyncHandler(async (req, res) => {
             message: 'Email không hợp lệ'
         });
     }
-    // kiểm tra mật khẩu
-    if (password.length !== 8) {
-        return res.status(400).json({
-            success: false,
-            message: 'Mật khẩu phải đúng 8 ký tự!'
-        });
-    }
     // kiem tra so dien thoai 
     const phoneNumber = parsePhoneNumberFromString(mobile, 'VN'); // 'VN' là mã quốc gia cho Việt Nam, thay đổi tùy quốc gia của bạn
     if (!phoneNumber || !phoneNumber.isValid()) {
@@ -210,9 +203,13 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 const deleteUser = asyncHandler(async (req, res) => {
-    const { _id } = req.query
-    if (!_id) throw new Error('Vui lòng nhập đầy đủ thông tin')
-    const response = await User.findByIdAndDelete(_id)
+    const id = req.params.id;
+    const user = req.user;
+    if (user._id === id) {
+    throw new Error('Không thể xóa chính mình')
+    }
+    if (!id) throw new Error('Vui lòng nhập đầy đủ thông tin')
+    const response = await User.findByIdAndDelete(id)
     return res.status(200).json({
         success: response ? true : false,
         deletedUser: response ? `Người dùng có email ${response.email} đã xóa` : 'Không có người dùng nào xóa'
@@ -233,6 +230,7 @@ const updateUser = asyncHandler(async (req, res) => {
 const updateUserByAdmin = asyncHandler(async (req, res) => {
     // 
     const { uid } = req.params
+    // const { uid } = req.user
     if (Object.keys(req.body).length === 0) throw new Error('Vui lòng nhập đầy đủ thông tin')
     const response = await User.findByIdAndUpdate(uid, req.body, { new: true }).select('-password -role -refreshToken')
     return res.status(200).json({

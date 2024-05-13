@@ -1,11 +1,13 @@
 
-import RootRouter from './Routes/Route'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import RootRouter from './routes/Route'
 function App() {
   return (
     <>
-      <RootRouter/>
+      <RootRouter />
+      <ToastContainer />
     </>
   )
 }
-
 export default App

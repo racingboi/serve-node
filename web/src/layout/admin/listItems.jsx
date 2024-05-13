@@ -5,11 +5,10 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import LayersIcon from '@mui/icons-material/Layers';
 import { Avatar } from '@mui/material';
 import { Link } from 'react-router-dom'
-
+import CategoryIcon from '@mui/icons-material/Category';
+import { FaToolbox } from "react-icons/fa";
 export const mainListItems = (
   <React.Fragment>
     <ListItemButton component={Link} to="/dashboard">
@@ -18,29 +17,29 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
-    <ListItemButton component={Link} to="/dashboard/order">
+    <ListItemButton component={Link} to="/dashboard/products">
       <ListItemIcon>
-        <ShoppingCartIcon />
+        <FaToolbox />
       </ListItemIcon>
-      <ListItemText primary="Orders" />
+      <ListItemText primary="Products" />
     </ListItemButton>
     <ListItemButton component={Link} to="/dashboard/user">
       <ListItemIcon>
         <PeopleIcon />
       </ListItemIcon>
-      <ListItemText primary="Customers" />
+      <ListItemText primary="Users" />
     </ListItemButton>
-    <ListItemButton component={Link} to="/dashboard/report">
+    <ListItemButton component={Link} to="/dashboard/category">
       <ListItemIcon>
-        <BarChartIcon />
+        <CategoryIcon />
       </ListItemIcon>
-      <ListItemText primary="Reports" />
+      <ListItemText primary="Category" />
     </ListItemButton>
-    <ListItemButton component={Link} to="/dashboard/integration">
+    <ListItemButton component={Link} to="/dashboard/order">
       <ListItemIcon>
-        <LayersIcon />
+        <ShoppingCartIcon />
       </ListItemIcon>
-      <ListItemText primary="Integrations" />
+      <ListItemText primary="Orders" />
     </ListItemButton>
   </React.Fragment>
 );
@@ -49,7 +48,7 @@ export const secondaryListItems = (
   <React.Fragment>
     <ListItemButton>
       <ListItemIcon>
-      <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
       </ListItemIcon>
       <ListItemText primary="ducpro" />
     </ListItemButton>

@@ -3,14 +3,16 @@ const asyncHandler = require('express-async-handler')
 const slugify = require('slugify')
 
 const createProduct = asyncHandler(async (req, res) => {
-    if (Object.keys(req.body).length === 0) throw new Error('Missing inputs')
-    if (req.body && req.body.title) req.body.slug = slugify(req.body.title)
-    const newProduct = await Product.create(req.body)
+    
+    if (Object.keys(req.body).length === 0) throw new Error('Missing inputs');
+    if (req.body && req.body.name) req.body.slug = slugify(req.body.name);
+    const newProduct = await Product.create(req.body);
     return res.status(200).json({
         success: newProduct ? true : false,
         createdProduct: newProduct ? newProduct : 'Cannot create new product'
-    })
-})
+    });
+});
+
 const getProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
     const product = await Product.findById(pid)
@@ -29,7 +31,7 @@ const getProducts = asyncHandler(async (req, res) => {
 })
 const updateProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
-    if (req.body && req.body.title) req.body.slug = slugify(req.body.title)
+    if (req.body && req.body.name) req.body.slug = slugify(req.body.name)
     const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, { new: true })
     return res.status(200).json({
         success: updatedProduct ? true : false,
@@ -44,6 +46,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
         deletedProduct: deletedProduct ? deletedProduct : 'Cannot delete product'
     })
 })
+
 module.exports = {
     createProduct,
     getProduct,
