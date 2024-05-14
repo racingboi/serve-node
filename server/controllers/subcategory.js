@@ -7,14 +7,14 @@ const createSubcategory = asyncHandler(async (req, res) => {
     const newSubcategory = await Subcategory.create(req.body);
     return res.status(200).json({
         success: newSubcategory ? true : false,
-        createdSubcategory: newSubcategory ? newSubcategory : 'Cannot create new subcategory'
+        Subcategory: newSubcategory ? newSubcategory : 'Cannot create new subcategory'
     });
 });
 const getSubcategories = asyncHandler(async (req, res) => {
     const subcategories = await Subcategory.find({});
     return res.status(200).json({
         success: subcategories ? true : false,
-        subcategories: subcategories ? subcategories : 'Cannot get subcategories'
+      Subcategory: subcategories ? subcategories : 'Cannot get subcategories'
     });
 });
 const updateSubcategory = asyncHandler(async (req, res) => {
@@ -24,7 +24,7 @@ const updateSubcategory = asyncHandler(async (req, res) => {
   });
   return res.status(200).json({
     success: updatedSubcategory ? true : false,
-    updatedSubcategory: updatedSubcategory ? updatedSubcategory : 'Cannot update subcategory'
+    Subcategory: updatedSubcategory ? updatedSubcategory : 'Cannot update subcategory'
   });
 }
 );
@@ -32,7 +32,7 @@ const deleteSubcategory = asyncHandler(async (req, res) => {
   const deletedSubcategory = await Subcategory.findByIdAndDelete(req.params.sid);
   return res.status(200).json({
     success: deletedSubcategory ? true : false,
-    deletedSubcategory: deletedSubcategory ? deletedSubcategory : 'Cannot delete subcategory'
+    Subcategory: deletedSubcategory ? deletedSubcategory : 'Cannot delete subcategory'
   });
 }
 );
@@ -40,7 +40,7 @@ const getSubcategory = asyncHandler(async (req, res) => {
   const subcategory = await Subcategory.findById(req.params.sid);
   return res.status(200).json({
     success: subcategory ? true : false,
-    subcategory: subcategory ? subcategory : 'Cannot get subcategory'
+    Subcategory: subcategory ? subcategory : 'Cannot get subcategory'
   });
 }
 );

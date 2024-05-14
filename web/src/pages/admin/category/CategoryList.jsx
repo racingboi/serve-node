@@ -1,4 +1,6 @@
-import { Card, CardContent, Container, Grid, Stack, Typography } from "@mui/material";
+import { Container, Grid, Stack, Typography } from "@mui/material";
+import CategoryTable from "./category";
+import SubCategoryTable from "./subcategory";
 
 export default function CategoryList() {
   return (
@@ -8,19 +10,10 @@ export default function CategoryList() {
           </Stack>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <Card>
-                <CardContent>
-              <Typography variant="h5">Category List</Typography>
-                
-                </CardContent>
-              </Card>
+          <CategoryTable />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h5">SubCategory List</Typography>
-                </CardContent>
-              </Card>
+          <SubCategoryTable />
             </Grid>
           </Grid>
     </Container>

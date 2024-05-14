@@ -47,7 +47,7 @@ export default function List() {
     if (errorAdd === 'success') {
       handleToast('success', 'Product created successfully');
     }
-  }, [statusAdd, errorAdd]);
+  }, [statusAdd, errorAdd,error]);
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchAllProducts());
