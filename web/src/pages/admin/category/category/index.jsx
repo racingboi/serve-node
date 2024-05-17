@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import Scrollbar from "../../../../components/scrollbar";
 import { useDispatch, useSelector } from "react-redux";
 import { handleToast } from "../../../../config/ConfigToats";
-import { getAll, resetCreateState } from "../../../../redux/slices/categoryReducer";
+import { getAll, resetCreateState, resetDeleteState, resetUpdateState } from "../../../../redux/slices/categoryReducer";
 import AddCategory from "./add/Add";
 
 export default function CategoryTable() {
@@ -24,8 +24,30 @@ export default function CategoryTable() {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.categories.status);
   const categoryData = useSelector((state) => state.categories.data);
-  const statusCreate = useSelector((state) => state.categories.status);
+  const statusCreate = useSelector((state) => state.categories.createCategory);
   const error = useSelector((state) => state.categories.error);
+  const statusUpdate = useSelector((state) => state.categories.updateCategory);
+  const statusDelete = useSelector((state) => state.categories.deleteCategory);
+  useEffect(() => {
+    if (statusUpdate === 'failed') {
+      handleToast('error', error.message);
+    }
+    if (statusUpdate === 'success') {
+      handleToast('success', 'Category updated successfully');
+      dispatch(getAll());
+      dispatch(resetUpdateState())
+    }
+  }, [dispatch, error, statusUpdate]);
+  useEffect(() => {
+    if (statusDelete === 'failed') {
+      handleToast('error', error.message);
+    }
+    if (statusDelete === 'success') {
+      handleToast('success', 'Category deleted successfully');
+      dispatch(getAll());
+      dispatch(resetDeleteState())
+    }
+  }, [dispatch, error, statusDelete]);
   useEffect(() => {
     if (statusCreate === 'failed') {
       handleToast('error', error.message);
@@ -44,7 +66,7 @@ export default function CategoryTable() {
 
   useEffect(() => {
     if (status === 'success') {
-      setCategory(categoryData.datacategory);
+      setCategory(categoryData.data);
     } else if (status === 'failed') {
       handleToast('error', 'Failed to load category');
     }
@@ -67,7 +89,7 @@ export default function CategoryTable() {
     }
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (_event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
     if (selectedIndex === -1) {
@@ -130,6 +152,7 @@ export default function CategoryTable() {
               onSelectAllClick={handleSelectAllClick}
               headLabel={[
                 { id: 'name', label: 'Name' },
+                { id: 'slug', label: 'slug' },
                 { id: '', label: '' },
               ]}
             />
@@ -137,10 +160,10 @@ export default function CategoryTable() {
               {dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
+                  // eslint-disable-next-line react/jsx-key
                   <CategoryTableRow
                     key={row._id}
-                    _id={row._id}
-                    name={row.name}
+                    category={row}
                     selected={selected.indexOf(row.name) !== -1}
                     handleClick={(event) => handleClick(event, row.name)}
                   />
@@ -154,7 +177,7 @@ export default function CategoryTable() {
           </Table>
         </TableContainer>
       </Scrollbar>
-      {category && (
+      {Array.isArray(category) && category.length > 0 && (
         <TablePagination
           page={page}
           component="div"

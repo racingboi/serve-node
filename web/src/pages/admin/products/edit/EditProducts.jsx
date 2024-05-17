@@ -1,99 +1,53 @@
-import { useEffect, useState } from 'react';
-import { Grid, TextField, Button, Box, Select, MenuItem } from '@mui/material';
-import { imageDb } from '../../../../config/firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { v4 } from 'uuid';
+import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProduct } from '../../../../redux/slices/productReducer';
-import { Editor } from '@tinymce/tinymce-react';
+import { useEffect, useState } from 'react';
+import { getProduct } from '../../../../redux/slices/productReducer';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { Box, Button, Grid, MenuItem, Select, TextField } from '@mui/material';
+import { Editor } from '@tinymce/tinymce-react';
 import { getAll } from '../../../../redux/slices/categoryReducer';
-import { handleToast } from '../../../../config/ConfigToats';
-const AddProductForm = () => {
-  const [product, setProduct] = useState({
-    name: '',
-    description: '',
-    brand: '',
-    price: 0,
-    quantity: 0,
-    images: [],
-    category: ''
-  });
+
+export default function EditProducts() {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const product = useSelector((state) => state.products.data.productData);
+   const categoryDatas = useSelector((state) => state.categories.data.data);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
-  const categoryDatas = useSelector((state) => state.categories.data.data);
-  const error = useSelector((state) => state.products.error);
-  const statusAdd = useSelector((state) => state.products.createProduct);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (statusAdd === 'failed') {
-      handleToast('error', error.message);
-    }
-    if (error === 'success') {
-      handleToast('success', 'Product created successfully');
-    }
-  }, [statusAdd, error, dispatch]);
-  useEffect(() => {
-    dispatch(getAll());
-  }, [dispatch]);
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
-  };
-
-  const handleDescriptionChange = (content) => {
-    setProduct((prevProduct) => ({ ...prevProduct, description: content }));
-  };
-
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setProduct((prevProduct) => ({ ...prevProduct, images: files }));
-
-    const filePreviews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(filePreviews);
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const uploadImage = async (image) => {
-      const imgRef = ref(imageDb, `products/${v4()}`);
-      const snapshot = await uploadBytes(imgRef, image);
-      const url = await getDownloadURL(snapshot.ref);
-      return url;
-    };
-
-    const imageUploadPromises = product.images.map((image) => uploadImage(image));
-    const imageUrls = await Promise.all(imageUploadPromises);
-
-    const productData = {
-      ...product,
-      category: selectedCategory,
-      images: imageUrls
-    };
-
-    dispatch(createProduct(productData));
-
-    setProduct({
-      name: '',
-      description: '',
-      brand: '',
-      price: 0,
-      quantity: 0,
-      images: [],
-      category: ''
-    });
-    setImagePreviews([]);
-  };
+  const [productDetails, setProductDetails] = useState({
+    name: '',
+    price: '',
+    description: '',
+    image: [],
+    category: '',
+  });
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
   };
+  useEffect(() => {
+    if (product) {
+      setProductDetails({
+        name: product.name,
+        price: product.price,
+        description: product.description,
+        images: product.images,
+        category: product.category,
+      });
+    }
+  }, [product]);
+
+  useEffect(() => {
+    dispatch(getProduct(id));
+  }, [dispatch, id]);
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+
+
   return (
     <>
       <Helmet>
-        <title>Add Product</title>
+        <title>Edit Product</title>
       </Helmet>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2} sx={{
@@ -218,13 +172,11 @@ const AddProductForm = () => {
           </Grid>
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary">
-              Add Product
+              edit Product
             </Button>
           </Grid>
         </Grid>
       </form>
     </>
   );
-};
-
-export default AddProductForm;
+}

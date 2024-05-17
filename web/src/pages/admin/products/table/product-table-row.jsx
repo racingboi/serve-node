@@ -10,6 +10,9 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Iconify from '../../../../components/iconify';
+import { deleteProduct } from '../../../../redux/slices/productReducer';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 export default function ProductTableRow({
   _id,
   selected,
@@ -22,7 +25,7 @@ export default function ProductTableRow({
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -37,7 +40,8 @@ export default function ProductTableRow({
   };
 
   const handleDelete = (id) => {
-    console.log(id);
+    dispatch(deleteProduct(id));
+    handleCloseMenu();
   };
 
   return (
@@ -71,13 +75,15 @@ export default function ProductTableRow({
         onClose={handleCloseMenu}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: { width: 140 },
+        slotProps={{
+          paper: {
+            sx: { width: 140 },
+          },
         }}
       >
         <MenuItem onClick={handleEditOpen}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          <Link to={`/dashboard/products/${_id}`}>Edit</Link>
         </MenuItem>
 
         <MenuItem onClick={() => {

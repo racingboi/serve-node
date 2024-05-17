@@ -7,6 +7,7 @@ import Register from "../pages/auth/register/Register";
 import User from "../pages/admin/user/User";
 import CreateProduct from "../pages/admin/products/add/ProductForm";
 import Category from "../pages/admin/category";
+import EditProducts from "../pages/admin/products/edit/EditProducts";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -18,7 +19,8 @@ export default function RootRouter() {
       children: [
         { index: true, element: <Home /> },
         { path: "products", element: <List /> },
-        { path: "products/add", element: <CreateProduct />},
+        { path: "products/add", element: <CreateProduct /> },
+        { path: `products/:id`, element: <EditProducts /> },
         { path: "user", element: <User /> },
         { path: "category", element: <Category /> },
       ],

@@ -59,5 +59,12 @@ export function applyFilter({ inputData, comparator, filterName }) {
 
   return inputData;
 }
-
+export const buildNestedCategories = (categories, parentId = null) => {
+  return categories
+    .filter(category => category.parentId === parentId)
+    .map(category => ({
+      ...category,
+      children: buildNestedCategories(categories, category._id)
+    }));
+};
 

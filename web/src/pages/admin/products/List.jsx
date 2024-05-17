@@ -16,7 +16,7 @@ import ProductTableHead from "./table/product-table-head";
 import ProductTableRow from "./table/product-table-row";
 import TableEmptyRows from "./table/table-empty-rows";
 import TableNoData from "./table/table-no-data";
-import { fetchAllProducts } from "../../../redux/slices/productReducer";
+import { fetchAllProducts, resetDelete, resetStateCreate } from "../../../redux/slices/productReducer";
 import { handleToast } from "../../../config/ConfigToats";
 import { applyFilter, emptyRows, getComparator } from "./utils";
 import ProductToolbar from './table/product-table-toolbar';
@@ -37,17 +37,29 @@ export default function List() {
   const status = useSelector((state) => state.products.status);
   const dataproduct = useSelector((state) => state.products.data);
   const error = useSelector((state) => state.products.error);
-  const statusAdd = useSelector((state) => state.products.status);
-  const errorAdd = useSelector((state) => state.products.error);
+  const statusAdd = useSelector((state) => state.products.createProduct);
+  const statusDelete = useSelector((state) => state.products.deleteProduct);
+  useEffect(() => {
+    if (statusDelete === 'failed') {
+      handleToast('error', error.message);
+    }
+    if (statusDelete === 'success') {
+      handleToast('success', 'Product deleted successfully');
+      dispatch(fetchAllProducts());
+      dispatch(resetDelete());
+    }
+  }, [dispatch, statusDelete, error]);
 
   useEffect(() => {
     if (statusAdd === 'failed') {
       handleToast('error', error.message);
     }
-    if (errorAdd === 'success') {
+    if (statusAdd === 'success') {
       handleToast('success', 'Product created successfully');
+      dispatch(fetchAllProducts());
+      dispatch(resetStateCreate());
     }
-  }, [statusAdd, errorAdd,error]);
+  }, [statusAdd,error,dispatch]);
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchAllProducts());
@@ -145,7 +157,7 @@ export default function List() {
                 <ProductTableHead
                   order={order}
                   orderBy={orderBy}
-                  rowCount={product.length}
+                  rowCount={product?.length}
                   numSelected={selected.length}
                   onRequestSort={handleSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -177,7 +189,7 @@ export default function List() {
                     ))}
                   <TableEmptyRows
                     height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, product.length)}
+                    emptyRows={emptyRows(page, rowsPerPage, product?.length)}
                   />
                   {notFound && <TableNoData query={filterName} />}
                 </TableBody>
@@ -187,7 +199,7 @@ export default function List() {
           <TablePagination
             page={page}
             component="div"
-            count={product.length}
+            count={product?.length}
             rowsPerPage={rowsPerPage}
             onPageChange={handleChangePage}
             rowsPerPageOptions={[5, 10, 25]}
