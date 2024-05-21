@@ -8,21 +8,29 @@ import User from "../pages/admin/user/User";
 import CreateProduct from "../pages/admin/products/add/ProductForm";
 import Category from "../pages/admin/category";
 import EditProducts from "../pages/admin/products/edit/EditProducts";
+import AddCategory from "../pages/admin/category/category/add/Add";
+import EditCategory from "../pages/admin/category/category/edit/EditCategory";
+import { Web } from "../pages/web/home";
+import Product from "../pages/web/shop/product";
+import ShowProduct from "../pages/web/shop/ShowProduct";
+import Profile from "../pages/web/profile/Profile";
 export default function RootRouter() {
   const routes = useRoutes([
     {
-      path: "/dashboard",
+      path: "/",
       element:
         <DrawerAppBar>
           <Outlet />
         </DrawerAppBar>, 
       children: [
-        { index: true, element: <Home /> },
-        { path: "products", element: <List /> },
-        { path: "products/add", element: <CreateProduct /> },
-        { path: `products/:id`, element: <EditProducts /> },
-        { path: "user", element: <User /> },
-        { path: "category", element: <Category /> },
+        { path: "dashboard", element: <Home /> },
+        { path: "dashboard/products", element: <List /> },
+        { path: "dashboard/products/add", element: <CreateProduct /> },
+        { path: `/dashboard/products/:id`, element: <EditProducts /> },
+        { path: "/dashboard/user", element: <User /> },
+        { path: "/dashboard/category", element: <Category /> },
+        { path: "/dashboard/category/add", element: <AddCategory /> },
+        { path: "/dashboard/category/edit/:id", element: <EditCategory /> },
       ],
     }, {
       path: "/login",
@@ -31,6 +39,21 @@ export default function RootRouter() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/home",
+      element: <Web />,
+    },
+       {
+      path: "/product",
+      element: <Product />,
+    },
+    {
+      path: `/product/show/:id`,
+      element: <ShowProduct />,
+    }, {
+      path: "/profile",
+      element: <Profile />,
     }
   ]);
   return routes;

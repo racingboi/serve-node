@@ -15,6 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
 import PropTypes from 'prop-types';
+import CustomizedSwitches from '../../theme/button';
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -62,7 +63,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 // TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
+const theme = createTheme(
+  {
+    palette: {
+      mode: 'light',
+    },
+  },
+);
 
 export default function Dashboard(props) {
   const [open, setOpen] = React.useState(true);
@@ -71,13 +78,17 @@ export default function Dashboard(props) {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
           <Toolbar
             sx={{
               pr: '24px',
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[800],
+              color: (theme) =>
+                theme.palette.mode === 'light' ? theme.palette.grey[800] : theme.palette.grey[100],
             }}
           >
             <IconButton
@@ -97,15 +108,13 @@ export default function Dashboard(props) {
               variant="h6"
               color="inherit"
               noWrap
-              sx={{ flexGrow: 1 }}
+              sx={{
+                flexGrow: 1,
+              }}
             >
               Dashboard
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+              <CustomizedSwitches />
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -124,13 +133,13 @@ export default function Dashboard(props) {
           <Divider />
           <List component="nav">
             <List>
-            {mainListItems}
+              {mainListItems}
             </List>
             <List sx={{ position: 'relative', paddingTop: 33 }}>
-            <Divider />
+              <Divider />
             </List>
-            <List sx={{position:'relative', paddingTop: 2}}>
-            {secondaryListItems}
+            <List sx={{ position: 'relative', paddingTop: 2 }}>
+              {secondaryListItems}
             </List>
           </List>
         </Drawer>

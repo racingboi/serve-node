@@ -11,13 +11,17 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Paper } from '@mui/material';
+import Footer from '../../../layout/web/Footer';
+import Navbar from '../../../layout/web/Navbar';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RegisterAPI } from '../../../redux/slices/authReducer';
+import { useEffect } from 'react';
+import { handleToast } from '../../../config/ConfigToats';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
+      {'Đăng nhập hoặc Đăng ký với Google để tiếp tục 2024 '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -29,16 +33,35 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Register() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const status = useSelector((state) => state.auth.status);
+  const error = useSelector((state) => state.auth.error);
+  const token = useSelector((state) => state.auth.data.accessToken);
+useEffect(() => {
+  if (status === 'failed') {
+    handleToast('error', error.message);
+  }
+  if (status === 'success') {
+    navigate('/login');
+    handleToast('success', 'Đăng ký thành công');
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+  }
+}, [status, error, token]);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const name = data.get('Name');
+    const mobile = data.get('Phone');
+    const email = data.get('email');
+    const password = data.get('password');
+    dispatch(RegisterAPI({ name, mobile, email, password }));
   };
   return (
     <ThemeProvider theme={defaultTheme}>
+      <Navbar />
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         <Grid item xs={false} sm={4} md={7} sx={{
@@ -63,7 +86,7 @@ export default function Register() {
                   <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                  Sign up
+                Đăng ký
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                   <Grid container spacing={2}>
@@ -85,7 +108,7 @@ export default function Register() {
                         id="Phone"
                         label="Phone"
                         name="Phone"
-                        autoComplete="family-name"
+                        autoComplete="Phone"
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -112,7 +135,7 @@ export default function Register() {
                     <Grid item xs={12}>
                       <FormControlLabel
                         control={<Checkbox value="allowExtraEmails" color="primary" />}
-                        label="I want to receive inspiration, marketing promotions and updates via email."
+                      label="Tôi muốn nhận được nguồn cảm hứng, khuyến mãi tiếp thị và cập nhật qua email."
                       />
                     </Grid>
                   </Grid>
@@ -125,11 +148,13 @@ export default function Register() {
                     Sign Up
                 </Button>
                   <Grid container justifyContent="flex-end">
-                    <Grid item>
-                      <Link href="#" variant="body2">
-                        Already have an account? Sign in
+                  <Grid item>
+                    <Typography variant="body2">
+                      <Link component={RouterLink} to="/login">
+                        Bạn co săn san để tạo một tai khoản? Đăng nhập
                       </Link>
-                    </Grid>
+                    </Typography>
+                  </Grid>
                   </Grid>
                 </Box>
               </Box>
@@ -137,6 +162,7 @@ export default function Register() {
           </Box>
         </Grid>
       </Grid>
+      <Footer />
     </ThemeProvider>
   );
 }

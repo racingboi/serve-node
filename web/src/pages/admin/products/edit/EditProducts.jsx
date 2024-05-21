@@ -1,53 +1,115 @@
-import { Link, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { getProduct } from '../../../../redux/slices/productReducer';
-import { Helmet } from 'react-helmet-async';
-import { Box, Button, Grid, MenuItem, Select, TextField } from '@mui/material';
+import { Grid, TextField, Button, Box, Select, MenuItem } from '@mui/material';
+import { imageDb } from '../../../../config/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProduct, getProduct } from '../../../../redux/slices/productReducer';
 import { Editor } from '@tinymce/tinymce-react';
-import { getAll } from '../../../../redux/slices/categoryReducer';
-
-export default function EditProducts() {
+import { Helmet } from 'react-helmet-async';
+import { Link, useParams } from 'react-router-dom';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { getCategory } from '../../../../redux/slices/categoryReducer';
+const EditProduct = () => {
   const { id } = useParams();
-  const dispatch = useDispatch();
-  const product = useSelector((state) => state.products.data.productData);
-   const categoryDatas = useSelector((state) => state.categories.data.data);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
-  const [productDetails, setProductDetails] = useState({
+  const [product, setProduct] = useState({
     name: '',
-    price: '',
     description: '',
-    image: [],
-    category: '',
+    brand: '',
+    price: 0,
+    quantity: 0,
+    images: [],
+    category: ''
   });
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('');
+  const categoryDatas = useSelector((state) => state.categories.data);
+  const dataProduct = useSelector((state) => state.products.data.productData);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getProduct(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (dataProduct) {
+      setProduct({
+        name: dataProduct.name,
+        description: dataProduct.description,
+        brand: dataProduct.brand,
+        price: dataProduct.price,
+        quantity: dataProduct.quantity,
+        images: dataProduct.images || [],
+        category: dataProduct.category
+      });
+      setImagePreviews(dataProduct.images);
+    }
+  }, [dataProduct, categoryDatas]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
+  };
+
+  const handleDescriptionChange = (content) => {
+    setProduct((prevProduct) => ({ ...prevProduct, description: content }));
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setProduct((prevProduct) => ({ ...prevProduct, images: files }));
+
+    const filePreviews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews(filePreviews);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const uploadImage = async (image) => {
+      const imgRef = ref(imageDb, `products/${uuidv4()}`);
+      const snapshot = await uploadBytes(imgRef, image);
+      return await getDownloadURL(snapshot.ref);
+    };
+
+    const imageUploadPromises = product.images.map(uploadImage);
+    const imageUrls = await Promise.all(imageUploadPromises);
+
+    const productData = {
+      ...product,
+      category: selectedCategory,
+      images: imageUrls
+    };
+
+    dispatch(createProduct(productData));
+
+    setProduct({
+      name: '',
+      description: '',
+      brand: '',
+      price: 0,
+      quantity: 0,
+      images: [],
+      category: ''
+    });
+    setImagePreviews([]);
+  };
+
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
   };
-  useEffect(() => {
-    if (product) {
-      setProductDetails({
-        name: product.name,
-        price: product.price,
-        description: product.description,
-        images: product.images,
-        category: product.category,
-      });
-    }
-  }, [product]);
 
-  useEffect(() => {
-    dispatch(getProduct(id));
-  }, [dispatch, id]);
-  useEffect(() => {
-    dispatch(getAll());
-  }, [dispatch]);
-
+  const handleSubCategoryChange = (event) => {
+    setSelectedSubCategory(event.target.value);
+  };
 
   return (
     <>
       <Helmet>
-        <title>Edit Product</title>
+        <title>{id ? 'Edit Product' : 'Add Product'}</title>
       </Helmet>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2} sx={{
@@ -64,7 +126,7 @@ export default function EditProducts() {
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <h2>Add Product</h2>
+            <h2>{id ? 'Edit Product' : 'Create Product'}</h2>
             <Button variant="contained" color="inherit"
               startIcon={<FormatListBulletedIcon />}
               component={Link} to="/dashboard/products">
@@ -119,16 +181,33 @@ export default function EditProducts() {
             <Select
               labelId="category-select-label"
               id="category-select"
-              name='parentId'
-              label="Category"
               value={selectedCategory}
               onChange={handleCategoryChange}
               fullWidth
+              required
             >
-              {Array.isArray(categoryDatas) ? categoryDatas.map((category) => (
+              {Array.isArray(selectedCategory) ? selectedCategory.map((category) => (
                 <MenuItem key={category._id} value={category._id}>
                   {category.name}
                 </MenuItem>
+              )) : null}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Select
+              labelId="subcategory-select-label"
+              id="sub-category-select"
+              value={selectedSubCategory}
+              onChange={handleSubCategoryChange}
+              fullWidth
+              required
+            >
+              {Array.isArray(categoryDatas) ? categoryDatas.map((category) => (
+                category.children && Array.isArray(category.children) ? category.children.map((child) => (
+                  <MenuItem key={child._id} value={child._id}>
+                    {child.name}
+                  </MenuItem>
+                )) : null
               )) : null}
             </Select>
           </Grid>
@@ -172,11 +251,13 @@ export default function EditProducts() {
           </Grid>
           <Grid item xs={12}>
             <Button type="submit" variant="contained" color="primary">
-              edit Product
+              {id ? 'Update Product' : 'Add Product'}
             </Button>
           </Grid>
         </Grid>
       </form>
     </>
   );
-}
+};
+
+export default EditProduct;

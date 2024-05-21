@@ -1,4 +1,4 @@
-import { Card, Stack, Table, TableBody, TableContainer, TablePagination, Typography } from "@mui/material";
+import { Button, Card, Stack, Table, TableBody, TableContainer, TablePagination, Typography } from "@mui/material";
 import CategoryTableHead from "./category-table-head";
 import CategoryToolbar from "./category-table-toolbar";
 import CategoryTableRow from "./category-table-row";
@@ -9,8 +9,9 @@ import { useEffect, useState } from "react";
 import Scrollbar from "../../../../components/scrollbar";
 import { useDispatch, useSelector } from "react-redux";
 import { handleToast } from "../../../../config/ConfigToats";
-import { getAll, resetCreateState, resetDeleteState, resetUpdateState } from "../../../../redux/slices/categoryReducer";
-import AddCategory from "./add/Add";
+import { getAll, resetCreateState, resetDeleteState, resetGetCategoryState, resetUpdateState } from "../../../../redux/slices/categoryReducer";
+import { Link } from "react-router-dom";
+import Iconify from "../../../../components/iconify";
 
 export default function CategoryTable() {
   const [page, setPage] = useState(0);
@@ -28,6 +29,18 @@ export default function CategoryTable() {
   const error = useSelector((state) => state.categories.error);
   const statusUpdate = useSelector((state) => state.categories.updateCategory);
   const statusDelete = useSelector((state) => state.categories.deleteCategory);
+  const getCategoryStatus = useSelector((state) => state.categories.getCategory);
+  useEffect(() => {
+    if (getCategoryStatus === 'failed') {
+      handleToast('error', error.message);
+    }
+    if (getCategoryStatus === 'success') {
+      handleToast('success', 'Category fetched successfully');
+      dispatch(getAll());
+      dispatch(resetGetCategoryState())
+    }
+
+  }, [dispatch, getCategoryStatus, error]);
   useEffect(() => {
     if (statusUpdate === 'failed') {
       handleToast('error', error.message);
@@ -133,7 +146,13 @@ export default function CategoryTable() {
     <Card>
       <Stack direction="row" justifyContent="space-between" padding="10px">
         <Typography variant="h6">List Category</Typography>
-        <AddCategory />
+        <Button
+          component={Link} to="/dashboard/category/add"
+          variant="contained" color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+        >
+          List Category
+        </Button>
       </Stack>
       <CategoryToolbar
         numSelected={selected.length}

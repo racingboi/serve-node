@@ -3,17 +3,23 @@ import {
   Avatar, Button, CssBaseline, TextField, FormControlLabel,
   Checkbox, Link, Paper, Box, Grid, Typography, createTheme, ThemeProvider
 } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {useAuth} from '../../../contexts/AuthContext';
 import { auth } from '../../../config/firebase';
 import GoogleIcon from '../../../assets/google.png';
+import { Footer, Navbar } from '../../../layout/web';
+import { useDispatch, useSelector } from 'react-redux';
+import { LoginAPI } from '../../../redux/slices/authReducer';
+import { useEffect } from 'react';
+import { handleToast } from '../../../config/ConfigToats';
 
 const defaultTheme = createTheme();
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Sign in or Sign up with Google to continue ' }
+      {'Đăng nhập hoặc Đăng ký với Google để tiếp tục ' }
       {/* <Link color="inherit" href="">
         Privacy Policy
       </Link> {new Date().getFullYear()}. */}
@@ -23,13 +29,41 @@ function Copyright(props) {
 }
 
 export default function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const status = useSelector((state) => state.auth.status);
+  const error = useSelector((state) => state.auth.error);
+  const token = useSelector((state) => state.auth.data.accessToken);
+  const data = useSelector((state) => state.auth.data.userData);
+  
+  useEffect(() => {
+    if (status === 'failed') {
+      handleToast('error', error.message);
+    }
+    if (status === 'success') {
+      handleToast('success', 'Đăng nhập thành công');
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+    }
+  }, [status, error, token]);
+  useEffect(() => {
+    if (data) {
+      if (data.role === 'admin') {
+        navigate('/dashboard')
+      } else {
+        navigate('/home')
+      }
+    }
+   
+  }, [data, navigate]);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const email = data.get('email');
+    const password = data.get('password');
+    console.log(email, password);
+    dispatch(LoginAPI({ email, password } ));
   };
   
   const { login } = useAuth();
@@ -56,6 +90,7 @@ export default function Login() {
   }
   return (
     <ThemeProvider theme={defaultTheme}>
+      <Navbar />
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         <Grid item xs={false} sm={4} md={7} sx={{
@@ -70,7 +105,7 @@ export default function Login() {
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
-            <Typography component="h1" variant="h5">Sign in</Typography>
+            <Typography component="h1" variant="h5">Đăng nhập</Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
@@ -118,10 +153,14 @@ export default function Login() {
 
               <Grid container sx={{my: 1}}>
                 <Grid item xs>
-                  <Link href="#" variant="body2">Forgot password?</Link>
+                  <Link href="#" variant="body2">Quên mật khẩu?</Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">{"Don't have an account? Sign Up"}</Link>
+                  <Typography variant="body2">
+                    <Link component={RouterLink} to="/register">
+                      Bạn chưa có tài khoản? Đăng ký
+                    </Link>
+                  </Typography>
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />
@@ -129,6 +168,9 @@ export default function Login() {
           </Box>
         </Grid>
       </Grid>
+      <div className='py-3'>
+        <Footer />
+     </div>
     </ThemeProvider>
   );
 }

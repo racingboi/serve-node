@@ -4,13 +4,12 @@ import { TableRow, TableCell, Checkbox, IconButton, MenuItem, Popover, Collapse,
 import Iconify from '../../../../components/iconify';
 import { useDispatch } from 'react-redux';
 import { deleteCategory } from '../../../../redux/slices/categoryReducer';
-import EditCategory from './edit/EditCategory';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Link } from 'react-router-dom';
 
 const CategoryTableRow = ({ category, selected, handleClick }) => {
   const [anchorEl, setAnchorEl] = useState(null); // State to manage popover anchor
-  const [editOpen, setEditOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(false);
   const dispatch = useDispatch();
   const handleOpenMenu = (event) => {
@@ -22,13 +21,9 @@ const CategoryTableRow = ({ category, selected, handleClick }) => {
   };
 
   const handleEditOpen = () => {
-    setEditOpen(true);
     handleCloseMenu();
   };
 
-  const handleEditClose = () => {
-    setEditOpen(false);
-  };
 
   const handleDelete = () => {
     dispatch(deleteCategory(category._id));
@@ -37,7 +32,7 @@ const CategoryTableRow = ({ category, selected, handleClick }) => {
 
   const renderMenuItems = () => (
     <>
-      <MenuItem onClick={handleEditOpen}>
+      <MenuItem onClick={handleEditOpen} component={Link} to={`/dashboard/category/edit/${category._id}`}  >
         <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
         Edit
       </MenuItem>
@@ -72,7 +67,7 @@ const CategoryTableRow = ({ category, selected, handleClick }) => {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
           <Collapse in={selectedCategory} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="purchases">
@@ -80,6 +75,7 @@ const CategoryTableRow = ({ category, selected, handleClick }) => {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Slug</TableCell>
+                    <TableCell ></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -90,9 +86,6 @@ const CategoryTableRow = ({ category, selected, handleClick }) => {
                       </TableCell>
                       <TableCell>{child.slug}</TableCell>
                       <TableCell align="right">
-                        <IconButton onClick={handleOpenMenu}>
-                          <Iconify icon="eva:more-vertical-fill" />
-                        </IconButton>
                       </TableCell>
                     </TableRow>)) :
                     <TableRow>
@@ -116,7 +109,6 @@ const CategoryTableRow = ({ category, selected, handleClick }) => {
         {renderMenuItems()}
       </Popover>
       {/* EditCategory dialog */}
-      <EditCategory open={editOpen} onClose={handleEditClose} category={category} />
     </>
   );
 };

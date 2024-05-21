@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Grid, TextField, Button, Box, Select, MenuItem } from '@mui/material';
 import { imageDb } from '../../../../config/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProduct } from '../../../../redux/slices/productReducer';
 import { Editor } from '@tinymce/tinymce-react';
@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { getAll } from '../../../../redux/slices/categoryReducer';
 import { handleToast } from '../../../../config/ConfigToats';
+
 const AddProductForm = () => {
   const [product, setProduct] = useState({
     name: '',
@@ -22,23 +23,26 @@ const AddProductForm = () => {
     category: ''
   });
   const [imagePreviews, setImagePreviews] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('');
+  // const [subcategoryData, setSubCategoryDatas] = useState([]);
   const categoryDatas = useSelector((state) => state.categories.data.data);
   const error = useSelector((state) => state.products.error);
   const statusAdd = useSelector((state) => state.products.createProduct);
   const dispatch = useDispatch();
-
   useEffect(() => {
     if (statusAdd === 'failed') {
       handleToast('error', error.message);
     }
-    if (error === 'success') {
+    if (statusAdd === 'success') {
       handleToast('success', 'Product created successfully');
     }
-  }, [statusAdd, error, dispatch]);
+  }, [statusAdd, error]);
+
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
@@ -55,17 +59,17 @@ const AddProductForm = () => {
     const filePreviews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(filePreviews);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const uploadImage = async (image) => {
-      const imgRef = ref(imageDb, `products/${v4()}`);
+      const imgRef = ref(imageDb, `products/${uuidv4()}`);
       const snapshot = await uploadBytes(imgRef, image);
-      const url = await getDownloadURL(snapshot.ref);
-      return url;
+      return await getDownloadURL(snapshot.ref);
     };
 
-    const imageUploadPromises = product.images.map((image) => uploadImage(image));
+    const imageUploadPromises = product.images.map(uploadImage);
     const imageUrls = await Promise.all(imageUploadPromises);
 
     const productData = {
@@ -87,9 +91,15 @@ const AddProductForm = () => {
     });
     setImagePreviews([]);
   };
+
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
   };
+
+  const handleSubCategoryChange = (event) => {
+    setSelectedSubCategory(event.target.value);
+  };
+
   return (
     <>
       <Helmet>
@@ -165,17 +175,35 @@ const AddProductForm = () => {
             <Select
               labelId="category-select-label"
               id="category-select"
-              name='parentId'
-              label="Category"
               value={selectedCategory}
               onChange={handleCategoryChange}
               fullWidth
+              required
             >
               {Array.isArray(categoryDatas) ? categoryDatas.map((category) => (
                 <MenuItem key={category._id} value={category._id}>
                   {category.name}
                 </MenuItem>
               )) : null}
+            </Select>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Select
+              labelId="subcategory-select-label"
+              id="sub-category-select"
+              value={selectedSubCategory}
+              onChange={handleSubCategoryChange}
+              fullWidth
+              required
+            >
+              {Array.isArray(categoryDatas) ? categoryDatas.map((category) => (
+                category.children && Array.isArray(category.children) ? category.children.map((child) => (
+                  <MenuItem key={child._id} value={child._id}>
+                    {child.name}
+                  </MenuItem>
+                )) : null
+              )) : null}
+
             </Select>
           </Grid>
           <Grid item xs={12}>

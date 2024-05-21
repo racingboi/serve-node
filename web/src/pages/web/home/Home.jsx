@@ -1,8 +1,12 @@
+import { Navbar, Main, Footer } from "../../../layout/web";
 
 export default function Home() {
   return (
-    <div>
-      aaaaaaaaaaa
-    </div>
+    <>
+      <Navbar />
+      <Main />
+      
+      <Footer />
+    </>
   )
 }

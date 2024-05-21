@@ -51,7 +51,8 @@ const deleteCategory = asyncHandler(async (req, res) => {
 }
 );
 const getCategory = asyncHandler(async (req, res) => {
-  const category = await Category.findById(req.params.cid);
+  const { cid } = req.params;
+  const category = await Category.findById(cid);
   return res.status(200).json({
     success: category ? true : false,
     data: category ? category : 'Cannot get category'
