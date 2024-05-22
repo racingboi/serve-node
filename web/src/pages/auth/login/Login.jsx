@@ -10,7 +10,7 @@ import { auth } from '../../../config/firebase';
 import GoogleIcon from '../../../assets/google.png';
 import { Footer, Navbar } from '../../../layout/web';
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginAPI } from '../../../redux/slices/authReducer';
+import { LoginAPI, resetLoginState } from '../../../redux/slices/authReducer';
 import { useEffect } from 'react';
 import { handleToast } from '../../../config/ConfigToats';
 
@@ -35,18 +35,22 @@ export default function Login() {
   const error = useSelector((state) => state.auth.error);
   const token = useSelector((state) => state.auth.data.accessToken);
   const data = useSelector((state) => state.auth.data.userData);
-  
+  const img = useSelector((state) => state.auth.data.userData?.img);
   useEffect(() => {
     if (status === 'failed') {
       handleToast('error', error.message);
     }
     if (status === 'success') {
       handleToast('success', 'Đăng nhập thành công');
+      dispatch(resetLoginState())
       if (token) {
         localStorage.setItem('token', token);
       }
+      if(img){
+        localStorage.setItem('img', img);
+      }
     }
-  }, [status, error, token]);
+  }, [status, error, token, dispatch,img]);
   useEffect(() => {
     if (data) {
       if (data.role === 'admin') {

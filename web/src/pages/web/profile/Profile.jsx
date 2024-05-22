@@ -53,17 +53,29 @@ export default function Profile() {
                   label="a" value="3" />
               </TabList>
             </Box>
-            <TabPanel value="1">
-              <Box sx={{ p: 2 }}>
-                <Info />
-              </Box>
-            </TabPanel>
-            <TabPanel value="2">
-              <Box sx={{ p: 2 }}>
-                <Product />
-              </Box>
-            </TabPanel>
-            <TabPanel value="3">Item Three</TabPanel>
+            <Box
+            sx={{
+              border: '1px solid #ccc',
+              borderRadius: "5px",
+              padding: '10px',
+              height: 'auto',
+              overflowY: 'auto',
+              boxShadow: '0 0 10px rgba(0,0,1,0.1)',
+              backgroundColor: '#0101',
+            }}
+            >
+              <TabPanel value="1">
+                <Box sx={{ p: 2 }}>
+                  <Info />
+                </Box>
+              </TabPanel>
+              <TabPanel value="2">
+                <Box sx={{ p: 2 }}>
+                  <Product />
+                </Box>
+              </TabPanel>
+              <TabPanel value="3">Item Three</TabPanel>
+            </Box>
           </TabContext>
         </Box>
         </Container>

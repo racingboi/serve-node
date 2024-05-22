@@ -16,6 +16,14 @@ export const RegisterAPI = createAsyncThunk(
   "auth/register",
   (data, thunkAPI) => handleAsyncThunk(AuthService.register, [data], thunkAPI)
 );
+export const getCurrentUser = createAsyncThunk(
+  "auth/getuser",
+  (_, thunkAPI) => handleAsyncThunk(AuthService.getuser, [null], thunkAPI)
+);
+export const updateUser = createAsyncThunk(
+  "auth/updateuser",
+  (data, thunkAPI) => handleAsyncThunk(AuthService.updateUser, [data], thunkAPI)
+);
 const AuthSlice = createSlice({
   name: "auth",
   initialState: {
@@ -30,8 +38,16 @@ const AuthSlice = createSlice({
     },
     resetregisterState: (state) => {
       state.error = null;
-      state.status = "idle";
+      state.statusRegister = "idle";
     },
+    resetGetUserState: (state) => {
+      state.error = null;
+      state.statusUser = "idle";
+    },
+    resetUpdateUserState: (state) => {
+      state.error = null;
+      state.statusUpdate = "idle";
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -47,18 +63,42 @@ const AuthSlice = createSlice({
         state.error = payload;
       })
       .addCase(RegisterAPI.fulfilled, (state, { payload }) => {
-        state.status = "success";
+        state.statusRegister = "success";
         state.data = payload;
       })
       .addCase(RegisterAPI.pending, (state) => {
-        state.status = "loading";
+        state.statusRegister = "loading";
       })
       .addCase(RegisterAPI.rejected, (state, { payload }) => {
-        state.status = "failed";
+        state.statusRegister = "failed";
+        state.error = payload;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, { payload }) => {
+        state.statusUser = "success";
+        state.data = payload;
+      })
+      .addCase(getCurrentUser.pending, (state) => {
+        state.statusUser = "loading";
+      })
+      .addCase(getCurrentUser.rejected, (state, { payload }) => {
+        state.statusUser = "failed";
+        state.error = payload;
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        state.statusUpdate = "success";
+        state.data = payload;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.statusUpdate = "loading";
+      })
+      .addCase(updateUser.rejected, (state, { payload }) => {
+        state.statusUpdate = "failed";
         state.error = payload;
       });
   }
 });
 export const { resetLoginState } = AuthSlice.actions;
 export const { resetregisterState } = AuthSlice.actions;
+export const { resetGetUserState } = AuthSlice.actions;
+export const { resetUpdateUserState } = AuthSlice.actions;
 export default AuthSlice.reducer;

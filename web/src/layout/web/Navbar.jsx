@@ -1,12 +1,15 @@
-import { NavLink } from 'react-router-dom'
-// import { useSelector } from 'react-redux'
+
+import { NavLink } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { Avatar } from '@mui/material';
-import "./style.css"
+import "./style.css";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 const Navbar = () => {
-    // const state = useSelector(state => state.handleCart)
+    const img = localStorage.getItem('img');
+    const token = localStorage.getItem('token');
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
             <div className="container">
@@ -18,7 +21,7 @@ const Navbar = () => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav m-auto my-2 text-center">
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/home">Home </NavLink>
+                            <NavLink className="nav-link" to="/home">Home</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/product">Products</NavLink>
@@ -31,23 +34,42 @@ const Navbar = () => {
                         </li>
                     </ul>
                     <div className="buttons text-center d-flex">
-                        <NavLink to="/login" className="btn btn-outline-dark m-2"><LogoutIcon/> Login</NavLink>
-                        <NavLink to="/register" className="btn btn-outline-dark m-2"><PersonAddAltIcon/> Register</NavLink>
-                        <NavLink to="/cart" className="btn btn-outline-dark m-2"><ShoppingCartIcon /> Cart </NavLink>
-                        <NavLink to="/profile" className="btn btn-outline-dark d-flex align-items-center m-2"
-                        ><Avatar
-                            sx={{
-                                width:28,
-                                height: 28,
-                                marginRight: 1
-                            }} alt="Remy Sharp" src="/static/images/avatar/1.jpg" /> profile</NavLink>
+                        {!token && (
+                            <>
+                                <NavLink to="/login" className="btn btn-outline-dark m-2">
+                                    <LogoutIcon /> Login
+                                </NavLink>
+                                <NavLink to="/register" className="btn btn-outline-dark m-2">
+                                    <PersonAddAltIcon /> Register
+                                </NavLink>
+                            </>
+                        )}
+                        {token && (
+                            <>
+                                <NavLink to="/logout" className="btn btn-outline-dark d-flex align-items-center m-2">
+                                    <ExitToAppIcon /> Logout
+                                </NavLink>
+                                <NavLink to="/profile" className="btn btn-outline-dark d-flex align-items-center m-2">
+                                    <Avatar
+                                        sx={{
+                                            width: 28,
+                                            height: 28,
+                                            marginRight: 1
+                                        }}
+                                        alt="User Avatar"
+                                        src={img}
+                                    /> Profile
+                                </NavLink>
+                            </>
+                        )}
+                        <NavLink to="/cart" className="btn btn-outline-dark m-2">
+                            <ShoppingCartIcon /> Cart
+                        </NavLink>
                     </div>
                 </div>
-
-
             </div>
         </nav>
-    )
-}
+    );
+};
 
-export default Navbar
+export default Navbar;

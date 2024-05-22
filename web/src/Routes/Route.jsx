@@ -14,6 +14,7 @@ import { Web } from "../pages/web/home";
 import Product from "../pages/web/shop/product";
 import ShowProduct from "../pages/web/shop/ShowProduct";
 import Profile from "../pages/web/profile/Profile";
+import Cart from "../pages/web/cart/Cart";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -54,6 +55,9 @@ export default function RootRouter() {
     }, {
       path: "/profile",
       element: <Profile />,
+    }, {
+      path: "/cart",
+      element: <Cart/>,
     }
   ]);
   return routes;
