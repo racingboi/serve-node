@@ -1,14 +1,22 @@
 
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { Avatar } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 import "./style.css";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { handleToast } from '../../config/ConfigToats';
 const Navbar = () => {
+    const navigate = useNavigate();
     const img = localStorage.getItem('img');
     const token = localStorage.getItem('token');
+    const hanldLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('img');
+        handleToast('success', 'Logout successfully');
+        navigate('/login');
+     }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
@@ -46,9 +54,10 @@ const Navbar = () => {
                         )}
                         {token && (
                             <>
-                                <NavLink to="/logout" className="btn btn-outline-dark d-flex align-items-center m-2">
+                                <Button onClick={hanldLogout}
+                                    className="btn btn-outline-dark d-flex align-items-center m-2">
                                     <ExitToAppIcon /> Logout
-                                </NavLink>
+                                </Button>
                                 <NavLink to="/profile" className="btn btn-outline-dark d-flex align-items-center m-2">
                                     <Avatar
                                         sx={{

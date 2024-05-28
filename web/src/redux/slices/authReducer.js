@@ -24,6 +24,10 @@ export const updateUser = createAsyncThunk(
   "auth/updateuser",
   (data, thunkAPI) => handleAsyncThunk(AuthService.updateUser, [data], thunkAPI)
 );
+export const logout = createAsyncThunk(
+  "auth/logout",
+  (_, thunkAPI) => handleAsyncThunk(AuthService.logout, [null], thunkAPI)
+);
 const AuthSlice = createSlice({
   name: "auth",
   initialState: {
@@ -47,6 +51,10 @@ const AuthSlice = createSlice({
     resetUpdateUserState: (state) => {
       state.error = null;
       state.statusUpdate = "idle";
+    },
+    resetLogoutState: (state) => {
+      state.error = null;
+      state.statusLogout = "idle";
     }
   },
   extraReducers: (builder) => {
@@ -94,6 +102,16 @@ const AuthSlice = createSlice({
       .addCase(updateUser.rejected, (state, { payload }) => {
         state.statusUpdate = "failed";
         state.error = payload;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.statusLogout = "success";
+      })
+      .addCase(logout.pending, (state) => {
+        state.statusLogout = "loading";
+      })
+      .addCase(logout.rejected, (state, { payload }) => {
+        state.statusLogout = "failed";
+        state.error = payload;
       });
   }
 });
@@ -101,4 +119,5 @@ export const { resetLoginState } = AuthSlice.actions;
 export const { resetregisterState } = AuthSlice.actions;
 export const { resetGetUserState } = AuthSlice.actions;
 export const { resetUpdateUserState } = AuthSlice.actions;
+export const { resetLogoutState } = AuthSlice.actions;
 export default AuthSlice.reducer;

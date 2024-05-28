@@ -8,7 +8,7 @@ const createProduct = asyncHandler(async (req, res) => {
     if (req.body && req.body.name) req.body.slug = slugify(req.body.name);
     const newProduct = await Product.create(req.body);
     return res.status(200).json({
-        success: newProduct ? true : false,
+        success: !!newProduct,
         createdProduct: newProduct ? newProduct : 'Cannot create new product'
     });
 });
@@ -17,7 +17,7 @@ const getProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
     const product = await Product.findById(pid)
     return res.status(200).json({
-        success: product ? true : false,
+        success: !!product,
         productData: product ? product : 'Cannot get product'
     })
 })
@@ -25,16 +25,17 @@ const getProduct = asyncHandler(async (req, res) => {
 const getProducts = asyncHandler(async (req, res) => {
     const products = await Product.find()
     return res.status(200).json({
-        success: products ? true : false,
+        success: products ? 'đúng' : 'sai',
         productDatas: products ? products : 'Cannot get products'
     })
 })
+console.log(1)
 const updateProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
     if (req.body && req.body.name) req.body.slug = slugify(req.body.name)
     const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, { new: true })
     return res.status(200).json({
-        success: updatedProduct ? true : false,
+        success: !!updatedProduct,
         updatedProduct: updatedProduct ? updatedProduct : 'Cannot update product'
     })
 })
@@ -42,7 +43,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const { pid } = req.params
     const deletedProduct = await Product.findByIdAndDelete(pid)
     return res.status(200).json({
-        success: deletedProduct ? true : false,
+        success: !!deletedProduct,
         deletedProduct: deletedProduct ? deletedProduct : 'Cannot delete product'
     })
 })
